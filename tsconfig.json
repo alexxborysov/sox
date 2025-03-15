@@ -1,0 +1,36 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+
+		"baseUrl": "./",
+		"rootDir": "./",
+
+		"module": "CommonJS",
+		"declaration": false,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"strictFunctionTypes": true,
+		"jsx": "react-jsx",
+
+		/* Linting */
+		"strict": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+
+		"paths": {
+			"~/*": ["packages/*"]
+		}
+	},
+	"include": [
+		"packages/core/src/*",
+		"packages/react/src",
+		"packages/utils/*",
+		"__tests__/*",
+		"**/*.tsx",
+		"**/*.ts"
+	],
+	"exclude": ["node_modules", "dist"]
+}

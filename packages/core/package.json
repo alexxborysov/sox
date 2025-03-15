@@ -1,0 +1,27 @@
+{
+	"name": "x-shard",
+	"author": "arch1i",
+	"version": "0.0.28",
+	"description": "Event-driven tool to describe behavior rely on either domain or browser events.",
+	"license": "MIT",
+	"main": "./dist/x-shard.cjs",
+	"module": "./dist/x-shard.js",
+	"types": "./dist/x-shard.d.ts",
+	"files": [
+		"./dist/x-shard.js",
+		"./dist/x-shard.cjs",
+		"./dist/x-shard.d.ts",
+		"./README.md",
+		"./LICENSE"
+	],
+	"keywords": [
+		"state",
+		"store",
+		"event",
+		"event-driven",
+		"native-event",
+		"state-management",
+		"domain",
+		"reactive"
+	]
+}

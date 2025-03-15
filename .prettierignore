@@ -1,0 +1,17 @@
+dist
+node_modules
+
+.vscode
+
+.dockerignore
+.gitlab-ci.yml
+Dockerfile
+nginx.conf
+
+package.json
+pnpm-lock.yaml
+
+.tool-versions
+
+*.md
+public
