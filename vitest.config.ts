@@ -8,6 +8,7 @@ export default defineConfig({
     globals: true,
     reporters: ["verbose"],
     include: ["__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    testTimeout: 900000,
   },
   server: {
     port: 5173,

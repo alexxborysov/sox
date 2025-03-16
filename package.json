@@ -1,5 +1,5 @@
 {
-  "name": "soz",
+  "name": "sox",
   "private": true,
   "author": "alexx.borysov",
   "description": "Socket",
@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "npx rollup --config rollup.config.js",
-    "test": "vitest --run"
+    "test": "vitest --watch"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",
@@ -23,11 +23,8 @@
     "@types/react": "^18.2.67",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/browser": "^1.3.1",
-    "effector": "^23.2.0",
     "jsdom": "^24.0.0",
     "prettier": "3.5.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "rollup": "^4.13.0",
     "rollup-plugin-cleaner": "^1.0.0",
     "rollup-plugin-dts": "^6.1.0",
@@ -36,25 +33,14 @@
     "tslib": "^2.6.2",
     "typescript": "^5.4.3",
     "vitest": "^1.3.1",
-    "webdriverio": "^8.34.1"
+    "webdriverio": "^8.34.1",
+    "msw": "^2.7.3"
   },
   "keywords": [
-    "state",
-    "store",
-    "event",
-    "event-driven",
-    "native-event",
-    "state-management",
-    "domain",
-    "reactive"
+    "sox"
   ],
   "workspaces": [
-    "utils",
-    "packages/core",
-    "packages/react"
+    "packages/core"
   ],
-  "packageManager": "yarn@1.22.22",
-  "dependencies": {
-    "msw": "^2.7.3"
-  }
+  "packageManager": "yarn@1.22.22"
 }
