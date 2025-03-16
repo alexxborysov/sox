@@ -26,12 +26,17 @@ export function makeSocket<EM extends EventMap>(config: Config) {
   const { url, protocols, maxRetries = 3 } = config;
 
   let socket: WebSocket | null = null;
-  let listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
+  let queue = [] as Array<VoidFunction>;
+  const listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
+
+  function execQueue() {
+    queue.forEach((sender) => sender());
+    queue = [];
+  }
 
   const meta = {
     connectionAttempt: 0,
     isConnecting: false,
-    connection: Promise.withResolvers<void>(),
   };
 
   function createSocket() {
@@ -51,8 +56,10 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     socket.addEventListener("open", () => {
       meta.isConnecting = false;
       meta.connectionAttempt = 0;
-      meta.connection.resolve();
+      console.log(queue);
+      execQueue();
       triggerEvent("connected");
+      console.log(queue);
     });
 
     socket.addEventListener("message", (event) => {
@@ -60,34 +67,26 @@ export function makeSocket<EM extends EventMap>(config: Config) {
         const payload = JSON.parse(event.data);
         const eventType = payload.message || "message";
         triggerEvent(eventType, payload);
-      } catch (e) {
+      } catch {
         triggerEvent("message", event.data);
       }
     });
 
     socket.addEventListener("close", (event) => {
       meta.isConnecting = false;
-      if (
+      const shouldReconnect =
         event.code !== 1000 &&
         event.reason !== CLOSED_FROM_CLIENT_REASON &&
-        meta.connectionAttempt < maxRetries
-      ) {
-        const exponentialDelay = Math.min(
-          1000 * Math.pow(2, meta.connectionAttempt - 1),
-          10_000
-        );
+        meta.connectionAttempt < maxRetries;
+
+      if (shouldReconnect) {
+        const exponentialDelay = getExponentialDelay(meta.connectionAttempt);
         triggerEvent("reconnecting", {
           attempt: meta.connectionAttempt,
           delay: exponentialDelay,
         });
-
-        setTimeout(() => {
-          meta.connection.resolve();
-          meta.connection = Promise.withResolvers<void>();
-          createSocket();
-        }, exponentialDelay);
+        setTimeout(() => createSocket(), exponentialDelay);
       } else if (meta.connectionAttempt >= maxRetries) {
-        meta.connection.resolve();
         triggerEvent("maxRetriesExceeded", { maxRetries });
       } else {
         triggerEvent("disconnected", { clean: event.wasClean });
@@ -112,9 +111,10 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     _message: Message,
     payload: EM["send"][Message]
   ) {
-    await meta.connection.promise;
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    if (socket?.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(payload));
+    } else {
+      queue.push(() => socket?.send(JSON.stringify(payload)));
     }
   }
 
@@ -155,6 +155,9 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     send,
     removeListeners,
     disconnect,
-    connected: meta.connection.promise,
   };
+}
+
+function getExponentialDelay(attempt: number) {
+  return Math.min(1000 * Math.pow(2, attempt - 1), 10_000);
 }

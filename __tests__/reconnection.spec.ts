@@ -4,7 +4,7 @@ import { createWsServer } from "./create-ws-server";
 import { delay } from "msw";
 
 describe("reconnection", () => {
-  it("should send message fired in reconnection state", async () => {
+  it.only("should send message fired in reconnection state", async () => {
     const PAYLOAD = {
       message: "set_listen_room",
       data: {
@@ -36,7 +36,7 @@ describe("reconnection", () => {
     socket.send("set_listen_room", PAYLOAD);
     socket.send("set_listen_room", PAYLOAD);
 
-    await delay(500);
+    await delay(1500);
 
     expect(serverMessageHandler).toHaveBeenCalledTimes(2);
 

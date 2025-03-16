@@ -26,7 +26,7 @@ describe("core", () => {
     });
     socket.on("event_a", clientHandler);
 
-    await socket.connected;
+    await delay(100);
     expect(clientHandler).toHaveBeenCalledTimes(1);
 
     socket.disconnect();
