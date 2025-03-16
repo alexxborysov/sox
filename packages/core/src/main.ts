@@ -24,20 +24,14 @@ const CLOSED_FROM_CLIENT_REASON = "CLOSED_FROM_CLIENT_REASON";
 
 export function makeSocket<EM extends EventMap>(config: Config) {
   const { url, protocols, maxRetries = 3 } = config;
-
-  let socket: WebSocket | null = null;
-  let queue = [] as Array<VoidFunction>;
-  const listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
-
-  function execQueue() {
-    queue.forEach((sender) => sender());
-    queue = [];
-  }
-
   const meta = {
     connectionAttempt: 0,
     isConnecting: false,
   };
+
+  let socket: WebSocket | null = null;
+  let queue = [] as Array<VoidFunction>;
+  const listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
 
   function createSocket() {
     if (meta.isConnecting) return;
@@ -56,10 +50,8 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     socket.addEventListener("open", () => {
       meta.isConnecting = false;
       meta.connectionAttempt = 0;
-      console.log(queue);
-      execQueue();
+      sendQueuedMessages();
       triggerEvent("connected");
-      console.log(queue);
     });
 
     socket.addEventListener("message", (event) => {
@@ -136,6 +128,11 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     }
 
     return unsubscribe;
+  }
+
+  function sendQueuedMessages() {
+    queue.forEach((sender) => sender());
+    queue = [];
   }
 
   function removeListeners<Event extends keyof EventMapWithInternals<EM>["on"]>(

@@ -5,5 +5,5 @@
   "singleQuote": false,
   "printWidth": 96,
   "bracketSameLine": false,
-  "arrowParens": "always",
+  "arrowParens": "always"
 }
