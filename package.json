@@ -1,6 +1,6 @@
 {
   "name": "sox",
-  "private": true,
+  "private": false,
   "author": "alexx.borysov",
   "description": "Socket",
   "license": "MIT",
@@ -9,6 +9,7 @@
     "build": "npx rollup --config rollup.config.js",
     "test": "vitest --watch"
   },
+  "version": "0.1.0",
   "devDependencies": {
     "@babel/cli": "^7.24.1",
     "@babel/core": "^7.24.3",
