@@ -1,4 +1,4 @@
-# sox
+# ssox
 
 A client-side declarative WebSocket abstraction.
 
@@ -7,7 +7,7 @@ A client-side declarative WebSocket abstraction.
 - **Typed event system** - Send and subscribe to predefined messages
 
 ```typescript
-import { makeSocket } from 'sox';
+import { makeSocket } from 'ssox';
 
 interface EventMap {
   send: {

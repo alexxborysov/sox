@@ -1,16 +1,16 @@
 {
-	"name": "sox",
+	"name": "ssox",
 	"author": "alexx.borysov",
 	"version": "0.1.0",
 	"description": "Client-side WebSocket abstraction",
 	"license": "MIT",
-	"main": "./dist/sox.cjs",
-	"module": "./dist/sox.js",
-	"types": "./dist/sox.d.ts",
+	"main": "./dist/ssox.cjs",
+	"module": "./dist/ssox.js",
+	"types": "./dist/ssox.d.ts",
 	"files": [
-		"./dist/sox.js",
-		"./dist/sox.cjs",
-		"./dist/sox.d.ts",
+		"./dist/ssox.js",
+		"./dist/ssox.cjs",
+		"./dist/ssox.d.ts",
 		"./README.md",
 		"./LICENSE"
 	],

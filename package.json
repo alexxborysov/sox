@@ -1,5 +1,5 @@
 {
-  "name": "sox",
+  "name": "ssox",
   "private": false,
   "author": "alexx.borysov",
   "description": "Socket",
@@ -38,7 +38,7 @@
     "msw": "^2.7.3"
   },
   "keywords": [
-    "sox"
+    "ssox"
   ],
   "workspaces": [
     "packages/core"

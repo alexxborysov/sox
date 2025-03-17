@@ -27,11 +27,11 @@ const core_config = [
     ],
     output: [
       {
-        file: `packages/core/dist/sox.js`,
+        file: `packages/core/dist/ssox.js`,
         format: "es",
       },
       {
-        file: `packages/core/dist/sox.cjs`,
+        file: `packages/core/dist/ssox.cjs`,
         format: "cjs",
       },
     ],
@@ -41,7 +41,7 @@ const core_config = [
     plugins: [dts(), size()],
     output: [
       {
-        file: `packages/core/dist/sox.d.ts`,
+        file: `packages/core/dist/ssox.d.ts`,
         format: "es",
       },
     ],
