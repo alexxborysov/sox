@@ -28,7 +28,7 @@ const socket = makeSocket<EventMap>({
 socket.send('chat', { message: 'Hello, world!' });
 
 // Listen for events. Returns unsubscribe function.
-const unsubscribe = socket.on('messageReceived', doSomthing);
+const unsubscribe = socket.on('messageReceived', doSomething);
 
 // Remove all listeners of specified event.
 socket.removeListeners('messageReceived');
