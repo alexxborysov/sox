@@ -25,6 +25,7 @@ describe(".remove-listeners", () => {
     const socket = makeSocket<EventMapExample>({
       url: server.link,
     });
+    socket.connect();
 
     const clientHandler = vi.fn((payload: unknown) => {
       expect(payload).toStrictEqual(PAYLOAD);
@@ -39,7 +40,7 @@ describe(".remove-listeners", () => {
     expect(clientHandler).toHaveBeenCalledTimes(2);
 
     server.finish();
-    socket.disconnect();
+    socket.close();
   });
 });
 

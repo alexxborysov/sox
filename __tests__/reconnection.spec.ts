@@ -32,6 +32,7 @@ describe("reconnection", () => {
     const socket = makeSocket<EventMapExample>({
       url: server.link,
     });
+    socket.connect();
 
     socket.send("set_listen_room", PAYLOAD);
     socket.send("set_listen_room", PAYLOAD);
@@ -40,7 +41,7 @@ describe("reconnection", () => {
 
     expect(serverMessageHandler).toHaveBeenCalledTimes(2);
 
-    socket.disconnect();
+    socket.close();
   });
 
   it("should handle multiple server disconnections", async () => {
@@ -70,6 +71,7 @@ describe("reconnection", () => {
     const socket = makeSocket<EventMapExample>({
       url: server.link,
     });
+    socket.connect();
 
     socket.send("set_listen_room", PAYLOAD);
     socket.send("set_listen_room", PAYLOAD);
@@ -81,7 +83,7 @@ describe("reconnection", () => {
     expect(serverMessageHandler).toHaveBeenCalledTimes(3);
     expect(connectionCount).toBe(2);
 
-    socket.disconnect();
+    socket.close();
   });
 });
 

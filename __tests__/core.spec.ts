@@ -24,12 +24,13 @@ describe("core", () => {
     const socket = makeSocket<EventMapExample>({
       url: server.link,
     });
+    socket.connect();
     socket.on("event_a", clientHandler);
 
     await delay(100);
     expect(clientHandler).toHaveBeenCalledTimes(1);
 
-    socket.disconnect();
+    socket.close();
   });
 
   it("should handle sending messages to server", async () => {
@@ -53,6 +54,7 @@ describe("core", () => {
     const socket = makeSocket<EventMapExample>({
       url: server.link,
     });
+    socket.connect();
 
     socket.send("set_listen_room", PAYLOAD);
     socket.send("set_listen_room", PAYLOAD);
@@ -60,7 +62,7 @@ describe("core", () => {
     await delay(200);
     expect(serverMessageHandler).toHaveBeenCalledTimes(2);
 
-    socket.disconnect();
+    socket.close();
   });
 
   it("should handle reconnection when server disconnects", async () => {
@@ -79,6 +81,7 @@ describe("core", () => {
       url: server.link,
       maxRetries: 2,
     });
+    socket.connect();
 
     const reconnectingHandler = vi.fn();
     const connectedHandler = vi.fn(() => {
@@ -89,7 +92,7 @@ describe("core", () => {
     socket.on("reconnecting", reconnectingHandler);
     socket.on("connected", connectedHandler);
 
-    socket.disconnect();
+    socket.close();
   });
 });
 

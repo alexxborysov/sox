@@ -33,7 +33,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
   let queue = [] as Array<VoidFunction>;
   const listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
 
-  function createSocket() {
+  function createSocketConnection() {
     if (meta.isConnecting) return;
     meta.isConnecting = true;
     meta.connectionAttempt++;
@@ -77,7 +77,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
           attempt: meta.connectionAttempt,
           delay: exponentialDelay,
         });
-        setTimeout(() => createSocket(), exponentialDelay);
+        setTimeout(() => createSocketConnection(), exponentialDelay);
       } else if (meta.connectionAttempt >= maxRetries) {
         triggerEvent("maxRetriesExceeded", { maxRetries });
       } else {
@@ -141,17 +141,16 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     listeners[eventType] = [];
   }
 
-  function disconnect() {
+  function close() {
     if (socket) socket.close(1000, CLOSED_FROM_CLIENT_REASON);
   }
-
-  createSocket();
 
   return {
     on,
     send,
     removeListeners,
-    disconnect,
+    close,
+    connect: createSocketConnection,
   };
 }
 
