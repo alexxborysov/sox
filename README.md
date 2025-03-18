@@ -24,10 +24,15 @@ const socket = makeSocket<EventMap>({
   maxRetries: 5
 });
 
+// Connection managment
+socket.connect()
+socket.close();
+
 // Send messages. Messages sent in 'reconnection' or 'connection' state are sent on websocket opened.
 socket.send('chat', { message: 'Hello, world!' });
 
 // Listen for events. Returns unsubscribe function.
+socket.on('typing', doSomething);
 const unsubscribe = socket.on('messageReceived', doSomething);
 
 // Remove all listeners of specified event.
@@ -36,7 +41,4 @@ socket.removeListeners('messageReceived');
 // Handle meta events
 socket.on('connected', console.log);
 socket.on('disconnected', console.log);
-
-// Close the socket
-socket.disconnect();
 ````
