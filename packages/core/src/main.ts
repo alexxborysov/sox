@@ -6,7 +6,7 @@ export interface Config {
 
 export type InternalEvents = {
   connected: void;
-  disconnected: { clean: boolean };
+  disconnected: { clean: boolean; reason: string };
   reconnecting: { attempt: number; delay: number };
   maxRetriesExceeded: { maxRetries: number };
 };
@@ -20,7 +20,8 @@ type ListenersMap<EventMap> = {
   [Message in keyof EventMap]?: Array<(payload: EventMap[Message]) => void>;
 };
 
-const CLOSED_FROM_CLIENT_REASON = "CLOSED_FROM_CLIENT_REASON";
+export const CLOSED_FROM_CLIENT_REASON = "CLOSED_FROM_CLIENT_REASON";
+export const NORMALLY_CLOSED_CODE = 1000;
 
 export function makeSocket<EM extends EventMap>(config: Config) {
   const { url, protocols, maxRetries = 3 } = config;
@@ -67,9 +68,10 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     socket.addEventListener("close", (event) => {
       meta.isConnecting = false;
       const shouldReconnect =
-        event.code !== 1000 &&
+        event.code !== NORMALLY_CLOSED_CODE &&
         event.reason !== CLOSED_FROM_CLIENT_REASON &&
         meta.connectionAttempt < maxRetries;
+      const maxRetriesExceeded = shouldReconnect && meta.connectionAttempt >= maxRetries;
 
       if (shouldReconnect) {
         const exponentialDelay = getExponentialDelay(meta.connectionAttempt);
@@ -78,10 +80,13 @@ export function makeSocket<EM extends EventMap>(config: Config) {
           delay: exponentialDelay,
         });
         setTimeout(() => createSocketConnection(), exponentialDelay);
-      } else if (meta.connectionAttempt >= maxRetries) {
+      } else if (maxRetriesExceeded) {
         triggerEvent("maxRetriesExceeded", { maxRetries });
       } else {
-        triggerEvent("disconnected", { clean: event.wasClean });
+        triggerEvent("disconnected", {
+          clean: event.wasClean,
+          reason: event.reason,
+        });
       }
     });
 
@@ -142,7 +147,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
   }
 
   function close() {
-    if (socket) socket.close(1000, CLOSED_FROM_CLIENT_REASON);
+    if (socket) socket.close(NORMALLY_CLOSED_CODE, CLOSED_FROM_CLIENT_REASON);
   }
 
   return {
@@ -155,5 +160,5 @@ export function makeSocket<EM extends EventMap>(config: Config) {
 }
 
 function getExponentialDelay(attempt: number) {
-  return Math.min(1000 * Math.pow(2, attempt - 1), 10_000);
+  return Math.min(1000 * Math.pow(2, attempt - 1), 7_000);
 }
