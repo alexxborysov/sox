@@ -6,7 +6,7 @@ export interface Config {
 
 export type InternalEvents = {
   connected: void;
-  disconnected: { clean: boolean; reason: string };
+  disconnected: { clean: boolean; reason: string; code: number };
   reconnecting: { attempt: number; delay: number };
   maxRetriesExceeded: { maxRetries: number };
 };
@@ -86,6 +86,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
         triggerEvent("disconnected", {
           clean: event.wasClean,
           reason: event.reason,
+          code: event.code,
         });
       }
     });

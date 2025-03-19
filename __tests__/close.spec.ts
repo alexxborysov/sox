@@ -17,9 +17,10 @@ describe(".close", () => {
     });
     socket.connect();
 
-    const closeHandler = vi.fn((meta: { clean: boolean; reason: string }) => {
+    const closeHandler = vi.fn((meta: any) => {
       expect(meta).toBeDefined();
-      expect(meta.reason).toBe(CLOSED_FROM_CLIENT_REASON);
+      expect(meta?.reason).toBe(CLOSED_FROM_CLIENT_REASON);
+      expect(meta?.code).toBe(1000);
     });
 
     socket.on("disconnected", closeHandler);
@@ -44,7 +45,7 @@ describe(".close", () => {
 
     const closeHandler = vi.fn((meta: unknown) => {
       expect(meta).toBeDefined();
-      expect(meta).toStrictEqual({ clean: true, reason: "" });
+      expect(meta).toStrictEqual({ clean: true, reason: "", code: 1000 });
     });
 
     socket.on("disconnected", closeHandler);
