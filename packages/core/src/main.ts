@@ -20,6 +20,7 @@ type ListenersMap<EventMap> = {
   [Message in keyof EventMap]?: Array<(payload: EventMap[Message]) => void>;
 };
 
+export type SocketStatus = "unknown" | "open" | "connecting" | "closing" | "closed";
 export const CLOSED_FROM_CLIENT_REASON = "CLOSED_FROM_CLIENT_REASON";
 export const NORMALLY_CLOSED_CODE = 1000;
 
@@ -151,12 +152,23 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     if (socket) socket.close(NORMALLY_CLOSED_CODE, CLOSED_FROM_CLIENT_REASON);
   }
 
+  function getStatus(): SocketStatus {
+    if (!socket?.readyState) {
+      return "unknown";
+    }
+    const statuses = ["open", "connecting", "closing", "closed"] satisfies Array<
+      Exclude<SocketStatus, "unkown">
+    >;
+    return statuses[socket.readyState];
+  }
+
   return {
     on,
     send,
     removeListeners,
     close,
     connect: createSocketConnection,
+    getStatus,
   };
 }
 
