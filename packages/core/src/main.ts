@@ -156,7 +156,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     if (!socket?.readyState) {
       return "unknown";
     }
-    const statuses = ["open", "connecting", "closing", "closed"] satisfies Array<
+    const statuses = ["connecting", "open", "closing", "closed"] satisfies Array<
       Exclude<SocketStatus, "unkown">
     >;
     return statuses[socket.readyState];
