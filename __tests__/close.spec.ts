@@ -30,7 +30,7 @@ describe(".close", () => {
     expect(closeHandler).toHaveBeenCalledOnce();
   });
 
-  it("should not reconnect", async () => {
+  it("should not reconnect on 1000 code", async () => {
     const server = createWsServer({
       on_connection: (client) => {
         client.close(NORMALLY_CLOSED_CODE);

@@ -1,7 +1,12 @@
+import { record } from "zod";
+
 export interface Config {
   url: string;
   protocols?: string | string[];
-  maxRetries?: number;
+  reconnection?: {
+    maxRetries: number;
+    excludedCloseCode: number[];
+  };
 }
 
 export type InternalEvents = {
@@ -25,7 +30,11 @@ export const CLOSED_FROM_CLIENT_REASON = "CLOSED_FROM_CLIENT_REASON";
 export const NORMALLY_CLOSED_CODE = 1000;
 
 export function makeSocket<EM extends EventMap>(config: Config) {
-  const { url, protocols, maxRetries = 3 } = config;
+  const {
+    url,
+    protocols,
+    reconnection = { maxRetries: 3, excludedCloseCode: [NORMALLY_CLOSED_CODE, 1005] },
+  } = config;
   const meta = {
     connectionAttempt: 0,
     isConnecting: false,
@@ -69,10 +78,11 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     socket.addEventListener("close", (event) => {
       meta.isConnecting = false;
       const shouldReconnect =
-        event.code !== NORMALLY_CLOSED_CODE &&
+        !reconnection.excludedCloseCode.includes(event.code) &&
         event.reason !== CLOSED_FROM_CLIENT_REASON &&
-        meta.connectionAttempt < maxRetries;
-      const maxRetriesExceeded = shouldReconnect && meta.connectionAttempt >= maxRetries;
+        meta.connectionAttempt < reconnection?.maxRetries;
+      const maxRetriesExceeded =
+        shouldReconnect && meta.connectionAttempt >= reconnection.maxRetries;
 
       if (shouldReconnect) {
         const exponentialDelay = getExponentialDelay(meta.connectionAttempt);
@@ -82,7 +92,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
         });
         setTimeout(() => createSocketConnection(), exponentialDelay);
       } else if (maxRetriesExceeded) {
-        triggerEvent("maxRetriesExceeded", { maxRetries });
+        triggerEvent("maxRetriesExceeded", { maxRetries: reconnection.maxRetries });
       } else {
         triggerEvent("disconnected", {
           clean: event.wasClean,
