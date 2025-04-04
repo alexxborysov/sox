@@ -97,9 +97,9 @@ export function makeSocket<EM extends EventMap>(config: Config) {
         triggerEvent("maxRetriesExceeded", { maxRetries: reconnection.maxRetries });
       } else {
         triggerEvent("disconnected", {
-          clean: event.wasClean,
-          reason: event.reason,
           code: event.code,
+          reason: event.reason,
+          clean: event.wasClean,
         });
       }
       log(event, debug);
@@ -167,8 +167,13 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     queue = [];
   }
 
-  function close() {
-    if (socket) socket.close(NORMALLY_CLOSED_CODE, CLOSED_FROM_CLIENT_REASON);
+  function close(meta?: { code?: number; reason?: string }) {
+    if (socket) {
+      socket.close(
+        meta?.code ?? NORMALLY_CLOSED_CODE,
+        meta?.reason ?? CLOSED_FROM_CLIENT_REASON
+      );
+    }
   }
 
   function getStatus(): SocketStatus {

@@ -53,6 +53,34 @@ describe(".close", () => {
     await delay(50);
     expect(closeHandler).toHaveBeenCalledOnce();
   });
+
+  it.only("should receive code and reason", async () => {
+    const REASON = "REASON";
+    const CODE = 3006;
+
+    const server = createWsServer({});
+    server.start();
+
+    const socket = makeSocket<EventMapExample>({
+      url: server.link,
+      debug: true,
+      reconnection: {
+        excludedCloseCode: [CODE],
+        maxRetries: 10,
+      },
+    });
+    socket.connect();
+
+    const closeHandler = vi.fn((meta: unknown) => {
+      expect(meta).toBeDefined();
+      expect(meta).toStrictEqual({ clean: true, reason: REASON, code: CODE });
+    });
+    socket.on("disconnected", closeHandler);
+
+    socket.close({ code: CODE, reason: REASON });
+    await delay(50);
+    expect(closeHandler).toHaveBeenCalledOnce();
+  });
 });
 
 interface EventMapExample {
