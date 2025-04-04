@@ -42,7 +42,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
 
   let socket: WebSocket | null = null;
   let queue = [] as Array<VoidFunction>;
-  const listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
+  let listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
 
   function createSocketConnection() {
     if (meta.isConnecting) return;
@@ -162,6 +162,11 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     listeners[eventType] = [];
   }
 
+  function removeAllListeners() {
+    listeners = {};
+    queue = [];
+  }
+
   function close() {
     if (socket) socket.close(NORMALLY_CLOSED_CODE, CLOSED_FROM_CLIENT_REASON);
   }
@@ -180,6 +185,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     on,
     send,
     removeListeners,
+    removeAllListeners,
     close,
     connect: createSocketConnection,
     getStatus,

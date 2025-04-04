@@ -1,7 +1,7 @@
 {
 	"name": "ssox",
 	"author": "alexx.borysov",
-	"version": "0.1.11",
+	"version": "0.1.12",
 	"description": "Client-side WebSocket abstraction",
 	"license": "MIT",
 	"main": "./dist/ssox.cjs",
