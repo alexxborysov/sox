@@ -79,7 +79,6 @@ describe("core", () => {
 
     const socket = makeSocket<EventMapExample>({
       url: server.link,
-      maxRetries: 2,
     });
     socket.connect();
 

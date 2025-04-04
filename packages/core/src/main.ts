@@ -1,5 +1,3 @@
-import { record } from "zod";
-
 export interface Config {
   url: string;
   protocols?: string | string[];
@@ -7,6 +5,7 @@ export interface Config {
     maxRetries: number;
     excludedCloseCode: number[];
   };
+  debug?: boolean;
 }
 
 export type InternalEvents = {
@@ -34,6 +33,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
     url,
     protocols,
     reconnection = { maxRetries: 3, excludedCloseCode: [NORMALLY_CLOSED_CODE, 1005] },
+    debug = false,
   } = config;
   const meta = {
     connectionAttempt: 0,
@@ -58,11 +58,12 @@ export function makeSocket<EM extends EventMap>(config: Config) {
 
     socket = new WebSocket(url, protocols);
 
-    socket.addEventListener("open", () => {
+    socket.addEventListener("open", (event) => {
       meta.isConnecting = false;
       meta.connectionAttempt = 0;
       sendQueuedMessages();
       triggerEvent("connected");
+      log(event, debug);
     });
 
     socket.addEventListener("message", (event) => {
@@ -73,6 +74,7 @@ export function makeSocket<EM extends EventMap>(config: Config) {
       } catch {
         triggerEvent("message", event.data);
       }
+      log(event, debug);
     });
 
     socket.addEventListener("close", (event) => {
@@ -100,10 +102,12 @@ export function makeSocket<EM extends EventMap>(config: Config) {
           code: event.code,
         });
       }
+      log(event, debug);
     });
 
     socket.addEventListener("error", (error) => {
       triggerEvent("error", error);
+      log(error, debug);
     });
   }
 
@@ -184,4 +188,10 @@ export function makeSocket<EM extends EventMap>(config: Config) {
 
 function getExponentialDelay(attempt: number) {
   return Math.min(1000 * Math.pow(2, attempt - 1), 7_000);
+}
+
+function log(value: unknown, debug: boolean) {
+  if (debug) {
+    console.log("SSOX Debug:", value);
+  }
 }
