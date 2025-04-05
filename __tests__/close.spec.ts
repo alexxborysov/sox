@@ -54,7 +54,7 @@ describe(".close", () => {
     expect(closeHandler).toHaveBeenCalledOnce();
   });
 
-  it.only("should receive code and reason", async () => {
+  it("should receive code and reason", async () => {
     const REASON = "REASON";
     const CODE = 3006;
 

@@ -45,16 +45,13 @@ export function makeSocket<EM extends EventMap>(config: Config) {
   let listeners: ListenersMap<EventMapWithInternals<EM>["on"]> = {};
 
   function createSocketConnection() {
-    if (meta.isConnecting) return;
+    const shouldCoonect =
+      !meta.isConnecting &&
+      !(socket?.readyState === WebSocket.OPEN || socket?.readyState === WebSocket.CONNECTING);
+    if (!shouldCoonect) return;
+
     meta.isConnecting = true;
     meta.connectionAttempt++;
-
-    if (
-      socket &&
-      (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)
-    ) {
-      socket.close();
-    }
 
     socket = new WebSocket(url, protocols);
 
