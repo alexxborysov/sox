@@ -2,7 +2,7 @@
 
 A client-side declarative WebSocket abstraction.
 
-- **Automatic reconnection** - Configurable retry attempts with exponential backoff
+- **Reconnection** - Configurable reconnection flow with exponential backoff.
 - **Message queuing** - Messages sent during 'reconnection' / 'connection' are automatically queued and sent when reconnected
 - **Typed event system** - Send and subscribe to predefined messages
 
@@ -21,10 +21,16 @@ interface EventMap {
 
 const socket = makeSocket<EventMap>({
   url: 'wss://server.com/socket',
-  maxRetries: 5
+  reconnection: {
+    maxRetries: 7,
+    // Excluded codes from reconnection flow by default: [1000, 1005].
+    // Following property will override defaults.
+    excludedCloseCode: [3006],
+  },
+  dedug: true,
 });
 
-// Connection managment
+// Connection management. Connection will be created only when .connect() called.
 socket.connect()
 socket.close();
 
@@ -35,8 +41,11 @@ socket.send('chat', { message: 'Hello, world!' });
 socket.on('typing', doSomething);
 const unsubscribe = socket.on('messageReceived', doSomething);
 
-// Remove all listeners of specified event.
+// Remove  listeners of specified event.
 socket.removeListeners('messageReceived');
+
+// Remove all listeners.
+socket.removeAllListeners();
 
 // Handle meta events
 socket.on('connected', console.log);
